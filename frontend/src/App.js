@@ -11,12 +11,13 @@ class App extends Component {
   
     axios.get('http://localhost:8080/')
     .then((response) => {
+      console.log(response);
+      
       // handle success
       const elements = response.data.map((x, i) => 'canvas' + i).map((x, index) => (<canvas id={x} key={x} style={{'maxWidth': '400px', heigh: '400px'}}></canvas>))
       ReactDOM.render(elements, document.getElementById('chart-displayer'));
       setTimeout(() => {
         this.localCharts = response.data.map((x, index) => new Chart(`canvas${index}`, response.data[index]));
-        this.updateData();
       }, 10);
     })
     .catch(function (error) {
@@ -41,9 +42,6 @@ class App extends Component {
           chart.data.datasets[0].data = response.data[index].data.datasets[0].data;
           chart.update();
         })
-        // this.localChart.data.datasets[0].data = response.data.data.datasets[0].data;
-        // this.localChart.update();
-        this.updateData();
       })
       .catch(function (error) {
         // handle error

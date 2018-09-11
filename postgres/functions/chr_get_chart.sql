@@ -1,78 +1,29 @@
-CREATE OR REPLACE FUNCTION chr_get_chart(i_chart INT) RETURNS json
+CREATE OR REPLACE FUNCTION chr_get_chart(i_chart_id INT) RETURNS json
 AS $CODE$
 BEGIN
     RETURN (
-        json_build_object(
-            'type', 'bar',
-            'data', json_build_object(
-                'labels', (
-                    SELECT json_agg(color)
-                    FROM (
-                        SELECT 'Red' color UNION ALL
-                        SELECT 'Blue' color UNION ALL
-                        SELECT 'Yellow' color UNION ALL
-                        SELECT 'Green' color UNION ALL
-                        SELECT 'Purple' color UNION ALL
-                        SELECT 'Orange' color
-                    ) a
-                ),
-                'datasets', (
-                    SELECT json_agg(
-                        json_build_object(
-                            'label','# of votes',
-                            'data',(
-                                SELECT json_agg(r)
-                                FROM (
-                                    SELECT floor(random() * 30 + 1) r UNION ALL
-                                    SELECT floor(random() * 30 + 1) r UNION ALL
-                                    SELECT floor(random() * 30 + 1) r UNION ALL
-                                    SELECT floor(random() * 30 + 1) r UNION ALL
-                                    SELECT floor(random() * 30 + 1) r UNION ALL
-                                    SELECT floor(random() * 30 + 1) r
-                                ) a
-                            ),
-                            'backgroundColor',(
-                                SELECT json_agg(r)
-                                FROM (
-                                    SELECT chr_get_color(1) r UNION ALL
-                                    SELECT chr_get_color(1) r UNION ALL
-                                    SELECT chr_get_color(1) r UNION ALL
-                                    SELECT chr_get_color(1) r UNION ALL
-                                    SELECT chr_get_color(1) r UNION ALL
-                                    SELECT chr_get_color(1) r
-                                ) a
-                            ),
-                            'borderColor',(
-                                SELECT json_agg(r)
-                                FROM (
-                                    SELECT chr_get_color(0.5) r UNION ALL
-                                    SELECT chr_get_color(0.5) r UNION ALL
-                                    SELECT chr_get_color(0.5) r UNION ALL
-                                    SELECT chr_get_color(0.5) r UNION ALL
-                                    SELECT chr_get_color(0.5) r UNION ALL
-                                    SELECT chr_get_color(0.5) r
-                                ) a
-                            ),
-                            'borderWidth',1
-                        )
-                    )
-                )
-            ),
-            'options', json_build_object(
-                'scales', json_build_object(
-                    'yAxes', (
-                        SELECT json_agg(
-                            json_build_object(
-                                'ticks', json_build_object(
-                                    'beginAtZero', true,
-                                    'suggestedMax', 30
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
+        SELECT
+            CASE
+                WHEN lkp_type.lkp_code = 'Chart.js' THEN
+                    CASE
+                        WHEN lkp_sub_type.lkp_code = 'bar' THEN
+                            chr_get_chart_js_bar(pk_cht_id)
+                        WHEN lkp_sub_type.lkp_code = 'pie' THEN
+                            chr_get_chart_js_pie(pk_cht_id)
+                        WHEN lkp_sub_type.lkp_code = 'line' THEN
+                            chr_get_chart_js_line(pk_cht_id)
+                        WHEN lkp_sub_type.lkp_code = 'radar' THEN
+                            chr_get_chart_js_radar(pk_cht_id)
+                        WHEN lkp_sub_type.lkp_code = 'polarArea' THEN
+                            chr_get_chart_js_polar_area(pk_cht_id)
+                        ELSE NULL
+                    END
+                ELSE NULL
+            END
+        FROM chrt_chart_cht
+        INNER JOIN chrt_lookup_lkp lkp_type ON lkp_type.pk_lkp_id = fk_lkp_cht_chart_type
+        INNER JOIN chrt_lookup_lkp lkp_sub_type ON lkp_sub_type.pk_lkp_id = fk_lkp_cht_chart_sub_type
+        WHERE pk_cht_id = i_chart_id
     );
 END
 $CODE$ language plpgsql

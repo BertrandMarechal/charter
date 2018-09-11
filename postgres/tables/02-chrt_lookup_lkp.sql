@@ -13,4 +13,5 @@ SELECT pk_lty_id, 'Chart.js', 'Chart.js', 'Chart.js' FROM chrt_lookup_type_lty W
 SELECT pk_lty_id, 'Bar', 'Bar chart', 'bar' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types' UNION ALL
 SELECT pk_lty_id, 'Pie', 'Pie chart', 'pie' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types' UNION ALL
 SELECT pk_lty_id, 'Line', 'Line chart', 'line' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types' UNION ALL
-SELECT pk_lty_id, 'Radar', 'Radar chart', 'radar' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types';
+SELECT pk_lty_id, 'Radar', 'Radar chart', 'radar' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types' UNION ALL
+SELECT pk_lty_id, 'Polar area', 'Polar area chart', 'polarArea' FROM chrt_lookup_type_lty WHERE lty_name = 'Chart js types';
